@@ -1,30 +1,59 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view />
+  <main-navigation></main-navigation>
+  <main>
+    <router-view></router-view>
+  </main>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+import MainNavigation from "./shared/components/Navigation/MainNavigation.vue";
+
+export default {
+  components: { MainNavigation },
+};
+</script>
+
+<style>
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap");
+
+* {
+  box-sizing: border-box;
 }
 
-#nav {
-  padding: 30px;
+html {
+  font-family: "Open Sans", sans-serif;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+body {
+  margin: 0;
+  background: #4d4d4d;
+}
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.slide-in-left-enter {
+  transform: translateX(-100%);
+}
+
+.slide-in-left-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: all 200ms;
+}
+
+.slide-in-left-exit {
+  transform: translateX(0%);
+  opacity: 1;
+}
+
+.slide-in-left-exit-active {
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: all 200ms;
+}
+
+.center {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

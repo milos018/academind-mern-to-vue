@@ -11,7 +11,6 @@ const App = () => {
     <Router>
       <MainNavigation />
       <main>
-
         <Switch>
           <Route path='/' exact>
             <Users />
