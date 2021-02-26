@@ -8,7 +8,7 @@ const routes = [
     component: Users
   },
   {
-    path: "/u1/places",
+    path: "/:userId/places",
     name: "UserPlaces",
     component: () => import(/* webpackChunkName: "user-places" */ "./places/pages/UserPlaces.vue")
   },

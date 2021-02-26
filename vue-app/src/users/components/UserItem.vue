@@ -16,21 +16,20 @@
 
 <script>
 export default {
-  props: ["id", "name", "image", "placeCount"],
-  // props: {
-  //   id: {
-  //     type: String,
-  //   },
-  //   name: {
-  //     type: String,
-  //   },
-  //   image: {
-  //     type: String,
-  //   },
-  //   placeCount: {
-  //     type: String,
-  //   },
-  // },
+  props: {
+    id: {
+      type: String,
+    },
+    name: {
+      type: String,
+    },
+    image: {
+      type: String,
+    },
+    placeCount: {
+      type: String,
+    },
+  },
 };
 </script>
 
