@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Users from './users/pages/Users.vue'
+import Users from "./users/pages/Users.vue";
 
 const routes = [
   {
@@ -10,17 +10,22 @@ const routes = [
   {
     path: "/:userId/places",
     name: "UserPlaces",
-    component: () => import(/* webpackChunkName: "user-places" */ "./places/pages/UserPlaces.vue")
+    component: () =>
+      import(
+        /* webpackChunkName: "user-places" */ "./places/pages/UserPlaces.vue"
+      )
   },
   {
     path: "/places/new",
     name: "NewPlace",
-    component: () => import(/* webpackChunkName: "new-place" */ "./places/pages/NewPlace.vue")
+    component: () =>
+      import(/* webpackChunkName: "new-place" */ "./places/pages/NewPlace.vue")
   },
   {
     path: "/auth",
     name: "Auth",
-    component: () => import(/* webpackChunkName: "auth" */ "./auth/pages/Auth.vue")
+    component: () =>
+      import(/* webpackChunkName: "auth" */ "./auth/pages/Auth.vue")
   }
 ];
 

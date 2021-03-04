@@ -9,7 +9,7 @@
 import MainNavigation from "./shared/components/Navigation/MainNavigation.vue";
 
 export default {
-  components: { MainNavigation },
+  components: { MainNavigation }
 };
 </script>
 

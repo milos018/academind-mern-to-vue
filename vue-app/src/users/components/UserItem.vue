@@ -1,7 +1,7 @@
 <template>
   <li class="user-item">
     <the-card>
-      <router-link to="/u1/places">
+      <router-link :to="'/' + id + '/places'">
         <div class="user-item__image">
           <the-avatar :image="image" :alt="name"></the-avatar>
         </div>
@@ -18,18 +18,18 @@
 export default {
   props: {
     id: {
-      type: String,
+      type: String
     },
     name: {
-      type: String,
+      type: String
     },
     image: {
-      type: String,
+      type: String
     },
     placeCount: {
-      type: String,
-    },
-  },
+      type: Number
+    }
+  }
 };
 </script>
 

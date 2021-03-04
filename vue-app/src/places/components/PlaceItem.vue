@@ -1,4 +1,14 @@
 <template>
+  <the-modal
+    :show="showMap"
+    @onCancel="closeMapHandler"
+    :header="address"
+    contentClass="place-item__modal-content"
+    footerClass="place-item__modal-actions"
+    :footer="'button'"
+  >
+    <div class="map-container">THE MAP</div>
+  </the-modal>
   <li class="place-item">
     <the-card class="place-item__content">
       <div class="place-item__image">
@@ -10,9 +20,9 @@
         <p>{{ description }}</p>
       </div>
       <div class="place-item__actions">
-        <button>View on Map</button>
-        <button>Edit</button>
-        <button>Delete</button>
+        <the-button inverse="inverse" @click="openMapHandler">View on Map</the-button>
+        <the-button :to="'/places/' + id">Edit</the-button>
+        <the-button danger="danger">Delete</the-button>
       </div>
     </the-card>
   </li>
@@ -21,6 +31,9 @@
 <script>
 export default {
   props: {
+    id: {
+      type: String,
+    },
     title: {
       type: String,
     },
@@ -32,6 +45,19 @@ export default {
     },
     description: {
       type: String,
+    },
+  },
+  data() {
+    return {
+      showMap: false,
+    };
+  },
+  methods: {
+    openMapHandler() {
+      this.showMap = true;
+    },
+    closeMapHandler() {
+      this.showMap = false;
     },
   },
 };
@@ -86,6 +112,11 @@ export default {
 .place-item__actions button,
 .place-item__actions a {
   margin: 0.5rem;
+}
+
+.map-container {
+  height: 15rem;
+  width: 100%;
 }
 
 @media (min-width: 768px) {

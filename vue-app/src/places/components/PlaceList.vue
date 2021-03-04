@@ -18,7 +18,7 @@
 import PlaceItem from "./PlaceItem";
 export default {
   components: { PlaceItem },
-  props: ["userPlaces"],
+  props: ["userPlaces"]
 };
 </script>
 

@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  props: ["image", "alt", "width", "height"],
+  props: ["image", "alt", "width", "height"]
 };
 </script>
 

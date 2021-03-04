@@ -33,11 +33,11 @@ export default {
     MainHeader,
     SideDrawer,
     NavLinks,
-    Backdrop,
+    Backdrop
   },
   data() {
     return {
-      drawerIsOpen: false,
+      drawerIsOpen: false
     };
   },
   methods: {
@@ -46,8 +46,8 @@ export default {
     },
     closeDrawer() {
       this.drawerIsOpen = false;
-    },
-  },
+    }
+  }
 };
 </script>
 

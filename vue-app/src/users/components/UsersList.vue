@@ -17,10 +17,10 @@ import UserItem from "./UserItem.vue";
 export default {
   props: {
     users: {
-      type: Array,
-    },
+      type: Array
+    }
   },
-  components: { UserItem },
+  components: { UserItem }
 };
 </script>
 
