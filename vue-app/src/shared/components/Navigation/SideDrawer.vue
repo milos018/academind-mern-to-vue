@@ -1,7 +1,9 @@
 <template>
-  <aside class="side-drawer">
-    <slot></slot>
-  </aside>
+  <teleport to="body">
+    <aside class="side-drawer" @click="onClickHandler">
+      <slot></slot>
+    </aside>
+  </teleport>
 </template>
 
 <script>

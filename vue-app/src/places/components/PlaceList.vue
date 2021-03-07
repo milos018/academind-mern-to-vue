@@ -1,4 +1,10 @@
 <template>
+  <div v-if="userPlaces.length === 0" class="place-list center">
+    <the-card>
+      <h2>No places found. Create One?</h2>
+      <button>Share Place</button>
+    </the-card>
+  </div>
   <ul class="place-list">
     <place-item
       v-for="place in userPlaces"
@@ -18,7 +24,7 @@
 import PlaceItem from "./PlaceItem";
 export default {
   components: { PlaceItem },
-  props: ["userPlaces"]
+  props: ["userPlaces"],
 };
 </script>
 

@@ -1,14 +1,12 @@
 <template>
-  <teleport to="body">
-    <backdrop v-if="drawerIsOpen" @click="closeDrawer"></backdrop>
-  </teleport>
+  <the-backdrop v-if="drawerIsOpen" @click="closeDrawerHandler"></the-backdrop>
   <side-drawer v-if="drawerIsOpen">
     <nav class="main-navigation__drawer-nav">
-      <nav-links @click="closeDrawer"></nav-links>
+      <nav-links @click="closeDrawerHandler"></nav-links>
     </nav>
   </side-drawer>
   <main-header>
-    <button className="main-navigation__menu-btn" @click="openDrawer">
+    <button class="main-navigation__menu-btn" @click="openDrawerHandler">
       <span />
       <span />
       <span />
@@ -26,28 +24,26 @@
 import MainHeader from "./MainHeader";
 import SideDrawer from "./SideDrawer";
 import NavLinks from "./NavLinks";
-import Backdrop from "../UIElements/Backdrop";
 
 export default {
   components: {
     MainHeader,
     SideDrawer,
     NavLinks,
-    Backdrop
   },
   data() {
     return {
-      drawerIsOpen: false
+      drawerIsOpen: false,
     };
   },
   methods: {
-    openDrawer() {
+    openDrawerHandler() {
       this.drawerIsOpen = true;
     },
-    closeDrawer() {
+    closeDrawerHandler() {
       this.drawerIsOpen = false;
-    }
-  }
+    },
+  },
 };
 </script>
 

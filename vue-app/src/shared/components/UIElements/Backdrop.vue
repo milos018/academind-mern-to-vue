@@ -1,9 +1,13 @@
 <template>
-  <div className="backdrop"></div>
+  <teleport to="body">
+    <div class="backdrop" @click="$emit('click')"></div>
+  </teleport>
 </template>
 
 <script>
-export default {};
+export default {
+  emits: ["click"],
+};
 </script>
 
 <style>

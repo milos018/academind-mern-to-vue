@@ -4,6 +4,8 @@
 
 <script>
 import PlaceList from "../components/PlaceList";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 
 const DUMMY_PLACES = [
   {
@@ -39,12 +41,16 @@ export default {
   components: {
     PlaceList,
   },
-  computed: {
-    userPlaces() {
+  setup() {
+    const route = useRoute();
+
+    const userPlaces = computed(() => {
       return DUMMY_PLACES.filter(
-        (place) => place.creator === this.$route.params.userId
+        (place) => place.creator === route.params.userId
       );
-    },
+    });
+
+    return { userPlaces };
   },
 };
 </script>

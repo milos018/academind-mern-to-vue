@@ -5,13 +5,7 @@
   <router-link v-if="to" :to="to" :class="buttonStyling">
     <slot></slot>
   </router-link>
-  <button
-    v-else
-    :class="buttonStyling"
-    @click="clickHandler"
-    :type="type"
-    :disabled="disabled"
-  >
+  <button v-else :class="buttonStyling" @click="$emit('click')" :type="type" :disabled="disabled">
     <slot></slot>
   </button>
 </template>
@@ -27,17 +21,17 @@ export default {
     "danger",
     "type",
     "disabled",
-    "clickHandler"
   ],
+  emits: ["click"],
   computed: {
     buttonStyling() {
       return [
         "button button--" + (this.size || "default"),
         this.inverse && "button--inverse",
-        this.danger && "button--danger"
+        this.danger && "button--danger",
       ];
-    }
-  }
+    },
+  },
 };
 </script>
 

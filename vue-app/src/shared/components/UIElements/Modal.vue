@@ -1,34 +1,37 @@
 <template>
-  <backdrop v-if="showMap" @click="$emit('onCancel')"></backdrop>
-  <div :class="['modal', className]" :style="style">
-    <header :class="['modal__header', headerClass]">
-      <h2>{{ header }}</h2>
-    </header>
-    <form @submit="onSubmit ? $emit('onSubmit') : e => e.preventDefault()">
-      <div :class="['modal__content', contentClass]">
-        <slot name="default"></slot>
-      </div>
-      <footer :class="['modal__footer', footerClass]">{{ footer }}</footer>
-    </form>
-  </div>
+  <the-backdrop v-if="show" @click="$emit('click')"></the-backdrop>
+  <teleport to="body">
+    <div :class="['modal', className]" :style="style">
+      <header :class="['modal__header', headerClass]">
+        <h2>{{ header }}</h2>
+      </header>
+      <form @submit="submit ? $emit('submit') : e => e.preventDefault()">
+        <div :class="['modal__content', contentClass]">
+          <slot name="default"></slot>
+        </div>
+        <footer :class="['modal__footer', footerClass]">
+          <slot name="footer"></slot>
+        </footer>
+      </form>
+    </div>
+  </teleport>
 </template>
 
 <script>
-import Backdrop from "./Backdrop";
 export default {
-  components: { Backdrop },
   props: [
-    "showMap",
+    "show",
     "className",
     "style",
     "headerClass",
     "header",
-    "onSubmit",
+    "submit",
     "contentClass",
     "footerClass",
     "footer",
     "onCancel",
   ],
+  emits: ["click"],
 };
 </script>
 

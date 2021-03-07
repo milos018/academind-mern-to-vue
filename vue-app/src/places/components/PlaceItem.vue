@@ -1,13 +1,16 @@
 <template>
   <the-modal
+    @click="closeMapHandler"
+    v-if="showMap"
     :show="showMap"
-    @onCancel="closeMapHandler"
     :header="address"
     contentClass="place-item__modal-content"
     footerClass="place-item__modal-actions"
-    :footer="'button'"
   >
     <div class="map-container">THE MAP</div>
+    <template v-slot:footer>
+      <the-button @click="closeMapHandler">CLOSE</the-button>
+    </template>
   </the-modal>
   <li class="place-item">
     <the-card class="place-item__content">
@@ -45,6 +48,12 @@ export default {
     },
     description: {
       type: String,
+    },
+    creatorId: {
+      type: String,
+    },
+    coordinates: {
+      type: Object,
     },
   },
   data() {
