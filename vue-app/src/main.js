@@ -9,7 +9,6 @@ import TheButton from "./shared/components/FormElements/TheButton.vue";
 import TheModal from "./shared/components/UIElements/Modal.vue";
 import TheBackdrop from "./shared/components/UIElements/Backdrop.vue";
 
-
 const app = createApp(App);
 
 app.component("the-card", Card);

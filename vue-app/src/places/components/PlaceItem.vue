@@ -23,7 +23,9 @@
         <p>{{ description }}</p>
       </div>
       <div class="place-item__actions">
-        <the-button inverse="inverse" @click="openMapHandler">View on Map</the-button>
+        <the-button inverse="inverse" @click="openMapHandler"
+          >View on Map</the-button
+        >
         <the-button :to="'/places/' + id">Edit</the-button>
         <the-button danger="danger">Delete</the-button>
       </div>
@@ -35,30 +37,30 @@
 export default {
   props: {
     id: {
-      type: String,
+      type: String
     },
     title: {
-      type: String,
+      type: String
     },
     image: {
-      type: String,
+      type: String
     },
     address: {
-      type: String,
+      type: String
     },
     description: {
-      type: String,
+      type: String
     },
     creatorId: {
-      type: String,
+      type: String
     },
     coordinates: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   data() {
     return {
-      showMap: false,
+      showMap: false
     };
   },
   methods: {
@@ -67,8 +69,8 @@ export default {
     },
     closeMapHandler() {
       this.showMap = false;
-    },
-  },
+    }
+  }
 };
 </script>
 

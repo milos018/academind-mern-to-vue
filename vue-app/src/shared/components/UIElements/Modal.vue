@@ -29,9 +29,9 @@ export default {
     "contentClass",
     "footerClass",
     "footer",
-    "onCancel",
+    "onCancel"
   ],
-  emits: ["click"],
+  emits: ["click"]
 };
 </script>
 

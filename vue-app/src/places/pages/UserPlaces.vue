@@ -17,9 +17,9 @@ const DUMMY_PLACES = [
     address: "20 W 34th St, New York, NY 10001, United States",
     location: {
       lat: "40.7484405",
-      lng: "-73.9878584",
+      lng: "-73.9878584"
     },
-    creator: "u1",
+    creator: "u1"
   },
   {
     id: "p2",
@@ -31,27 +31,27 @@ const DUMMY_PLACES = [
     address: "New York, NY 10004, United States",
     location: {
       lat: "40.6892534",
-      lng: "-74.0466891",
+      lng: "-74.0466891"
     },
-    creator: "u2",
-  },
+    creator: "u2"
+  }
 ];
 
 export default {
   components: {
-    PlaceList,
+    PlaceList
   },
   setup() {
     const route = useRoute();
 
     const userPlaces = computed(() => {
       return DUMMY_PLACES.filter(
-        (place) => place.creator === route.params.userId
+        place => place.creator === route.params.userId
       );
     });
 
     return { userPlaces };
-  },
+  }
 };
 </script>
 

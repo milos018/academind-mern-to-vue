@@ -29,11 +29,11 @@ export default {
   components: {
     MainHeader,
     SideDrawer,
-    NavLinks,
+    NavLinks
   },
   data() {
     return {
-      drawerIsOpen: false,
+      drawerIsOpen: false
     };
   },
   methods: {
@@ -42,8 +42,8 @@ export default {
     },
     closeDrawerHandler() {
       this.drawerIsOpen = false;
-    },
-  },
+    }
+  }
 };
 </script>
 
