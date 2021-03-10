@@ -7,7 +7,11 @@
     contentClass="place-item__modal-content"
     footerClass="place-item__modal-actions"
   >
-    <div class="map-container">THE MAP</div>
+    <template v-slot:default>
+      <div class="map-container">
+        <Map :center="coordinates" zoom="16" />
+      </div>
+    </template>
     <template v-slot:footer>
       <the-button @click="closeMapHandler">CLOSE</the-button>
     </template>
@@ -34,7 +38,9 @@
 </template>
 
 <script>
+import Map from "../../shared/components/UIElements/Map";
 export default {
+  components: { Map },
   props: {
     id: {
       type: String

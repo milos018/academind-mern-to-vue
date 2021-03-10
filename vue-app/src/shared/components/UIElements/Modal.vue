@@ -7,7 +7,7 @@
       </header>
       <form @submit="submit ? $emit('submit') : e => e.preventDefault()">
         <div :class="['modal__content', contentClass]">
-          <slot name="default"></slot>
+          <slot name="default"> </slot>
         </div>
         <footer :class="['modal__footer', footerClass]">
           <slot name="footer"></slot>
