@@ -8,6 +8,7 @@ import Avatar from "./shared/components/UIElements/Avatar.vue";
 import TheButton from "./shared/components/FormElements/TheButton.vue";
 import TheModal from "./shared/components/UIElements/Modal.vue";
 import TheBackdrop from "./shared/components/UIElements/Backdrop.vue";
+import Input from "./shared/components/FormElements/Input.vue";
 
 const app = createApp(App);
 
@@ -16,6 +17,7 @@ app.component("the-avatar", Avatar);
 app.component("the-button", TheButton);
 app.component("the-modal", TheModal);
 app.component("the-backdrop", TheBackdrop);
+app.component("the-input", Input);
 
 app.use(store);
 app.use(router).mount("#app");
