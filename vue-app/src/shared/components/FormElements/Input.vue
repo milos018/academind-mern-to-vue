@@ -1,37 +1,43 @@
 <template>
   <div
     class="form-control"
-    :class="{ 'form-control--invalid': !inputIsValid && isTouched }"
+    :class="{
+      'form-control--invalid': !inputState.isValid && inputState.isTouched
+    }"
   >
-    <label :for="id">{{ label }}</label>
+    <label :for="id">{{ $props.label }}</label>
     <input
       v-if="$props.element === 'input'"
-      :id="id"
-      :type="type"
+      :id="$props.id"
+      :type="$props.type"
       :placeholder="placeholder"
       @blur="handleTouch"
-      v-model="inputVal"
-      @input="emitInput"
+      v-model="inputState.value"
+      @input="changeHandler"
     />
     <textarea
       v-else
-      :id="id"
-      :rows="rows || 3"
+      :id="$props.id"
+      :rows="$props.rows || 3"
       @blur="handleTouch"
-      v-model="inputVal"
-      @input="emitInput"
+      v-model="inputState.value"
+      @input="changeHandler"
     />
-    <p v-if="!inputVal && isTouched">{{ $props.errorText }}</p>
+    <p v-if="!inputState.isValid && inputState.isTouched">
+      {{ $props.errorText }}
+    </p>
   </div>
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { reactive } from "vue";
 import { validate } from "../../utils/validator";
 
 export default {
   props: [
     "element",
+    "initialValue",
+    "initialValid",
     "id",
     "type",
     "placeholder",
@@ -42,27 +48,25 @@ export default {
   ],
   emits: ["onInput"],
   setup(props, { emit }) {
-    const inputVal = ref("");
-    const isTouched = ref(false);
+    const inputState = reactive({
+      value: props.initialValue || "",
+      isTouched: false,
+      isValid: props.initialValid || false
+    });
 
-    const handleTouch = () => {
-      isTouched.value = true;
+    const changeHandler = () => {
+      inputState.isValid = validate(inputState.value, props.validators);
+      emit("onInput", props.id, inputState.value, inputState.isValid);
     };
 
-    const inputIsValid = computed(() =>
-      validate(inputVal.value, props.validators)
-    );
-
-    const emitInput = () => {
-      emit("onInput", props.id, inputVal.value, inputIsValid.value);
+    const handleTouch = () => {
+      inputState.isTouched = true;
     };
 
     return {
-      inputVal,
-      isTouched,
+      inputState,
       handleTouch,
-      inputIsValid,
-      emitInput
+      changeHandler
     };
   }
 };

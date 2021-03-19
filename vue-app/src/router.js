@@ -22,6 +22,14 @@ const routes = [
       import(/* webpackChunkName: "new-place" */ "./places/pages/NewPlace.vue")
   },
   {
+    path: "/places/:placeId",
+    name: "Updateplace",
+    component: () =>
+      import(
+        /* webpackChunkName: "update-place" */ "./places/pages/UpdatePlace.vue"
+      )
+  },
+  {
     path: "/auth",
     name: "Auth",
     component: () =>

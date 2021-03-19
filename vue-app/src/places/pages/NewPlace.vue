@@ -32,16 +32,19 @@
 </template>
 
 <script>
-import { reactive } from "vue";
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_MINLENGTH
 } from "../../shared/utils/validator";
 
+import { useForm } from "../../shared/hooks/form-hook";
+
+import "./PlaceForm.css";
+
 export default {
   setup() {
-    const formState = reactive({
-      inputs: {
+    const [formState, inputHandler] = useForm(
+      {
         title: {
           value: "",
           isValid: false
@@ -55,35 +58,13 @@ export default {
           isValid: false
         }
       },
-      isValid: false
-    });
+      false
+    );
 
     const validatorRequire = () => VALIDATOR_REQUIRE();
     const validatorMinLength = val => VALIDATOR_MINLENGTH(val);
 
-    const inputHandler = (id, inputVal, inputIsValid) => {
-      let formIsValid = true;
-      for (const inputId in formState.inputs) {
-        if (inputId === id) {
-          formIsValid = formIsValid && inputIsValid;
-        } else {
-          formIsValid = formIsValid && formState.inputs[inputId].isValid;
-        }
-      }
-
-      formState.inputs = {
-        ...formState.inputs,
-        [id]: {
-          value: inputVal,
-          isValid: inputIsValid
-        }
-      };
-
-      formState.isValid = formIsValid;
-    };
-
     const placeSubmitHandler = () => {
-      // event.preventDefault() -> not needed -> @submit.prevent
       console.log(formState.inputs);
     };
 
@@ -97,16 +78,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.place-form {
-  list-style: none;
-  margin: 0 auto;
-  padding: 1rem;
-  width: 90%;
-  max-width: 40rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-  border-radius: 6px;
-  background: white;
-}
-</style>
