@@ -27,5 +27,10 @@ export const useForm = (initialInputs, initialValidity) => {
     formState.isValid = formIsValid;
   };
 
-  return [formState, inputHandler];
+  const setFormData = (inputData, formValidity) => {
+    formState.inputs = inputData;
+    formState.isValid = formValidity;
+  };
+
+  return [formState, inputHandler, setFormData];
 };

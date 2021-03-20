@@ -1,8 +1,10 @@
 <template>
   <div v-if="!foundPlace" class="center">
-    <h2>Could not find place with this ID!</h2>
+    <the-card>
+      <h2>Could not find place with this ID</h2>
+    </the-card>
   </div>
-  <form class="place-form">
+  <form v-else class="place-form" @submit.prevent="placeUpdateSubmitHandler">
     <the-input
       id="title"
       element="input"
@@ -31,6 +33,7 @@
 </template>
 
 <script>
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import {
@@ -74,25 +77,47 @@ const DUMMY_PLACES = [
 
 export default {
   setup() {
+    const isLoading = ref(true);
     const route = useRoute();
 
-    const foundPlace = DUMMY_PLACES.find(
-      place => place.id === route.params.placeId
+    const foundPlace = computed(() =>
+      DUMMY_PLACES.find(place => place.id === route.params.placeId)
     );
 
-    const [formState, inputHandler] = useForm(
+    const [formState, inputHandler, setFormData] = useForm(
       {
         title: {
-          value: foundPlace.title,
+          value: "",
           isValid: false
         },
         description: {
-          value: foundPlace.description,
+          value: "",
           isValid: false
         }
       },
-      true
+      false
     );
+
+    if (foundPlace.value) {
+      setFormData(
+        {
+          title: {
+            value: foundPlace.value.title,
+            isValid: true
+          },
+          description: {
+            value: foundPlace.value.description,
+            isValid: true
+          }
+        },
+        true
+      );
+      isLoading.value = false;
+    }
+
+    const placeUpdateSubmitHandler = () => {
+      console.log(formState.inputs);
+    };
 
     const validatorRequire = () => VALIDATOR_REQUIRE();
     const validatorMinLength = val => VALIDATOR_MINLENGTH(val);
@@ -102,7 +127,8 @@ export default {
       formState,
       validatorRequire,
       validatorMinLength,
-      inputHandler
+      inputHandler,
+      placeUpdateSubmitHandler
     };
   }
 };

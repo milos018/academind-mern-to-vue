@@ -1,12 +1,14 @@
 <template>
   <the-modal
-    @click="closeMapHandler"
+    @onCancel="closeMapHandler"
     v-if="showMap"
     :show="showMap"
-    :header="address"
     contentClass="place-item__modal-content"
     footerClass="place-item__modal-actions"
   >
+    <template v-slot:header>
+      {{ $props.address }}
+    </template>
     <template v-slot:default>
       <div class="map-container">
         <Map :center="coordinates" zoom="16" />
@@ -14,6 +16,25 @@
     </template>
     <template v-slot:footer>
       <the-button @click="closeMapHandler">CLOSE</the-button>
+    </template>
+  </the-modal>
+  <the-modal
+    v-if="showConfirmModal"
+    :show="showConfirmModal"
+    @onCancel="cancelDeleteHandler"
+    footerClass="place-item__modal-actions"
+  >
+    <template v-slot:header>
+      Are you sure?
+    </template>
+    <p>Please click Confirm to Delete. This cannot be undone.</p>
+    <template v-slot:footer>
+      <the-button inverse="inverse" @click="cancelDeleteHandler"
+        >Cancel</the-button
+      >
+      <the-button danger="danger" type="button" @click="confirmDeleteHandler"
+        >Delete</the-button
+      >
     </template>
   </the-modal>
   <li class="place-item">
@@ -31,13 +52,16 @@
           >View on Map</the-button
         >
         <the-button :to="'/places/' + id">Edit</the-button>
-        <the-button danger="danger">Delete</the-button>
+        <the-button @click="showDeleteWarningHandler" danger="danger"
+          >Delete</the-button
+        >
       </div>
     </the-card>
   </li>
 </template>
 
 <script>
+import { ref } from "vue";
 import Map from "../../shared/components/UIElements/Map";
 export default {
   components: { Map },
@@ -64,18 +88,39 @@ export default {
       type: Object
     }
   },
-  data() {
-    return {
-      showMap: false
+  setup() {
+    const showMap = ref(false);
+    const showConfirmModal = ref(false);
+
+    const openMapHandler = () => {
+      showMap.value = true;
     };
-  },
-  methods: {
-    openMapHandler() {
-      this.showMap = true;
-    },
-    closeMapHandler() {
-      this.showMap = false;
-    }
+    const closeMapHandler = () => {
+      showMap.value = false;
+    };
+
+    const showDeleteWarningHandler = () => {
+      showConfirmModal.value = true;
+    };
+
+    const cancelDeleteHandler = () => {
+      showConfirmModal.value = false;
+    };
+
+    const confirmDeleteHandler = () => {
+      console.log("DELETE");
+      showConfirmModal.value = false;
+    };
+
+    return {
+      showMap,
+      showConfirmModal,
+      openMapHandler,
+      closeMapHandler,
+      showDeleteWarningHandler,
+      cancelDeleteHandler,
+      confirmDeleteHandler
+    };
   }
 };
 </script>
