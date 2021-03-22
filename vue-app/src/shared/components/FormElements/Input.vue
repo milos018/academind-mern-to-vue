@@ -11,16 +11,16 @@
       :id="$props.id"
       :type="$props.type"
       :placeholder="placeholder"
-      @blur="handleTouch"
       v-model="inputState.value"
+      @blur="handleTouch"
       @input="changeHandler"
     />
     <textarea
       v-else
       :id="$props.id"
       :rows="$props.rows || 3"
-      @blur="handleTouch"
       v-model="inputState.value"
+      @blur="handleTouch"
       @input="changeHandler"
     />
     <p v-if="!inputState.isValid && inputState.isTouched">

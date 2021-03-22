@@ -51,8 +51,13 @@
         <the-button inverse="inverse" @click="openMapHandler"
           >View on Map</the-button
         >
-        <the-button :to="'/places/' + id">Edit</the-button>
-        <the-button @click="showDeleteWarningHandler" danger="danger"
+        <the-button v-if="$store.getters.isLoggedIn" :to="'/places/' + id"
+          >Edit</the-button
+        >
+        <the-button
+          v-if="$store.getters.isLoggedIn"
+          @click="showDeleteWarningHandler"
+          danger="danger"
           >Delete</the-button
         >
       </div>

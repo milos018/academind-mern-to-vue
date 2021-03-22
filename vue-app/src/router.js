@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Users from "./users/pages/Users.vue";
+import Users from "./user/pages/Users.vue";
 
 const routes = [
   {
@@ -33,7 +33,7 @@ const routes = [
     path: "/auth",
     name: "Auth",
     component: () =>
-      import(/* webpackChunkName: "auth" */ "./auth/pages/Auth.vue")
+      import(/* webpackChunkName: "auth" */ "./user/pages/Auth.vue")
   }
 ];
 

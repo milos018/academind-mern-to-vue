@@ -9,6 +9,9 @@ export const useForm = (initialInputs, initialValidity) => {
   const inputHandler = (id, inputVal, inputIsValid) => {
     let formIsValid = true;
     for (const inputId in formState.inputs) {
+      if (!formState.inputs[inputId]) {
+        continue;
+      }
       if (inputId === id) {
         formIsValid = formIsValid && inputIsValid;
       } else {

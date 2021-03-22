@@ -3,14 +3,17 @@
     <li>
       <router-link to="/">All Users</router-link>
     </li>
-    <li>
+    <li v-if="$store.getters.isLoggedIn">
       <router-link to="/u1/places">My Places</router-link>
     </li>
-    <li>
+    <li v-if="$store.getters.isLoggedIn">
       <router-link to="/places/new">Add Place</router-link>
     </li>
-    <li>
-      <router-link to="/auth">Auth</router-link>
+    <li v-if="!$store.getters.isLoggedIn">
+      <router-link to="/auth">Authenticate</router-link>
+    </li>
+    <li v-if="$store.getters.isLoggedIn">
+      <button @click="$store.dispatch('logout')">Log Out</button>
     </li>
   </ul>
 </template>
