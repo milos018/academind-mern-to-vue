@@ -1,15 +1,15 @@
 <template>
-  <a v-if="href" :class="buttonStyling" :href="href">
+  <a v-if="$props.href" :class="buttonStyling" :href="$props.href">
     <slot></slot>
   </a>
-  <router-link v-if="to" :to="to" :class="buttonStyling">
+  <router-link v-if="$props.to" :to="$props.to" :class="buttonStyling">
     <slot></slot>
   </router-link>
   <button
     v-else
     :class="buttonStyling"
     @click="$emit('click')"
-    :type="type"
+    :type="$props.type"
     :disabled="disabled"
   >
     <slot></slot>
@@ -33,8 +33,8 @@ export default {
     buttonStyling() {
       return [
         "button button--" + (this.size || "default"),
-        this.inverse && "button--inverse",
-        this.danger && "button--danger"
+        this.$props.inverse && "button--inverse",
+        this.$props.danger && "button--danger"
       ];
     }
   }

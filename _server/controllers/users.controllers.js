@@ -52,7 +52,10 @@ exports.signup = async (req, res, next) => {
 			return next(new HttpError('Could not save user', 500));
 		}
 
-		res.status(201).json(newUser);
+		res.status(201).json({
+			message: 'User Created',
+			user: newUser,
+		});
 	});
 };
 

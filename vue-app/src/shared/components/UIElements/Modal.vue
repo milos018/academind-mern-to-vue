@@ -1,11 +1,11 @@
 <template>
-  <the-backdrop v-if="$props.show" @click="$emit('onCancel')"></the-backdrop>
+  <the-backdrop v-if="$props.show" @click="$emit('click')"></the-backdrop>
   <teleport to="body">
     <div :class="['modal', $props.className]" :style="style">
       <header :class="['modal__header', $props.headerClass]">
         <h2><slot name="header"></slot></h2>
       </header>
-      <form @submit.prevent="$props.onSubmit">
+      <form>
         <div :class="['modal__content', $props.contentClass]">
           <slot name="default"></slot>
         </div>
@@ -30,7 +30,12 @@ export default {
     "footer",
     "onSubmit"
   ],
-  emits: ["onCancel", "onSubmit"]
+  emits: ["click", "onSubmit"],
+  methods: {
+    handleSubmit(e) {
+      e.preventDefault();
+    }
+  }
 };
 </script>
 

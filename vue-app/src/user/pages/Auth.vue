@@ -1,5 +1,12 @@
 <template>
+  <the-error-modal
+    v-if="errorMessage"
+    :errorMessage="errorMessage"
+    @click="errorHandler"
+  ></the-error-modal>
   <the-card class="authentication">
+    <the-loading-spinner v-if="isLoading" :asOverlay="true">
+    </the-loading-spinner>
     <h2>Login Required</h2>
     <hr />
     <form @submit.prevent="authSubmitHandler">
@@ -23,6 +30,7 @@
         @onInput="inputHandler"
       ></the-input>
       <the-input
+        hello="something"
         id="password"
         element="input"
         type="password"
@@ -34,7 +42,7 @@
       <the-button type="submit" :disabled="!formData.isValid">{{
         isLoginMode ? "Login" : "Signup"
       }}</the-button>
-      <the-button type="button" @click="switchModeHandler"
+      <the-button type="button" inverse="inverse" @click="switchModeHandler"
         >Switch to {{ isLoginMode ? "Signup" : "Login" }}</the-button
       >
     </form>
@@ -56,6 +64,9 @@ import {
 export default {
   setup() {
     const isLoginMode = ref(true);
+    const isLoading = ref(false);
+    const errorMessage = ref(null);
+
     const [formData, inputHandler, setFormData] = useForm(
       {
         email: {
@@ -77,8 +88,7 @@ export default {
             ...formData.inputs,
             name: undefined
           },
-          formData.value.inputs.email.isValid &&
-            formData.value.inputs.password.isValid
+          formData.inputs.email.isValid && formData.inputs.password.isValid
         );
       } else {
         setFormData(
@@ -96,9 +106,69 @@ export default {
     const store = useStore();
     const router = useRouter();
 
-    const authSubmitHandler = () => {
-      store.dispatch("login");
-      router.push("/");
+    const authSubmitHandler = async () => {
+      isLoading.value = true;
+
+      if (isLoginMode.value) {
+        try {
+          const url = "http://localhost:5500/api/users/login";
+
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              email: formData.inputs.email.value,
+              password: formData.inputs.password.value
+            })
+          });
+
+          const responseData = await response.json();
+
+          if (!response.ok) {
+            throw new Error(responseData.message);
+          }
+
+          store.dispatch("login");
+          router.push("/");
+        } catch (error) {
+          isLoading.value = false;
+          errorMessage.value = error.message || "Something went wrong";
+        }
+      } else {
+        try {
+          const url = "http://localhost:5500/api/users/signup";
+
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              name: formData.inputs.name.value,
+              email: formData.inputs.email.value,
+              password: formData.inputs.password.value
+            })
+          });
+
+          const responseData = await response.json();
+
+          if (!response.ok) {
+            throw new Error(responseData.message);
+          }
+
+          store.dispatch("login");
+          router.push("/");
+        } catch (error) {
+          isLoading.value = false;
+          errorMessage.value = error.message || "Something went wrong";
+        }
+      }
+    };
+
+    const errorHandler = () => {
+      errorMessage.value = null;
     };
 
     const validatorEmail = () => VALIDATOR_EMAIL();
@@ -106,11 +176,14 @@ export default {
     const validatorRequired = () => VALIDATOR_REQUIRE();
 
     return {
+      isLoading,
+      errorMessage,
       isLoginMode,
       formData,
       switchModeHandler,
       authSubmitHandler,
       inputHandler,
+      errorHandler,
       validatorEmail,
       validatorMinlegth,
       validatorRequired
