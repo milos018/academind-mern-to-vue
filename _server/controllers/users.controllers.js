@@ -15,7 +15,7 @@ exports.getUsers = async (req, res, next) => {
 	if (!users || users.length === 0)
 		return next(new HttpError('No users found', 404));
 
-	res.status(200).json(users);
+	res.status(200).json({ users });
 };
 
 exports.signup = async (req, res, next) => {

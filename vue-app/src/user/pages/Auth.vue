@@ -2,7 +2,7 @@
   <the-error-modal
     v-if="errorMessage"
     :errorMessage="errorMessage"
-    @click="errorHandler"
+    @click="clearError"
   ></the-error-modal>
   <the-card class="authentication">
     <the-loading-spinner v-if="isLoading" :asOverlay="true">
@@ -54,6 +54,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { useForm } from "../../shared/hooks/form-hook";
+import { useHttp } from "../../shared/hooks/http-hook";
 
 import {
   VALIDATOR_EMAIL,
@@ -64,8 +65,8 @@ import {
 export default {
   setup() {
     const isLoginMode = ref(true);
-    const isLoading = ref(false);
-    const errorMessage = ref(null);
+
+    const { isLoading, errorMessage, sendRequest, clearError } = useHttp();
 
     const [formData, inputHandler, setFormData] = useForm(
       {
@@ -107,68 +108,46 @@ export default {
     const router = useRouter();
 
     const authSubmitHandler = async () => {
-      isLoading.value = true;
-
       if (isLoginMode.value) {
         try {
           const url = "http://localhost:5500/api/users/login";
 
-          const response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
+          await sendRequest(
+            url,
+            "POST",
+            JSON.stringify({
               email: formData.inputs.email.value,
               password: formData.inputs.password.value
-            })
-          });
-
-          const responseData = await response.json();
-
-          if (!response.ok) {
-            throw new Error(responseData.message);
-          }
+            }),
+            { "Content-Type": "application/json" }
+          );
 
           store.dispatch("login");
           router.push("/");
         } catch (error) {
-          isLoading.value = false;
-          errorMessage.value = error.message || "Something went wrong";
+          console.log(error.message);
         }
       } else {
         try {
           const url = "http://localhost:5500/api/users/signup";
 
-          const response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
+          await sendRequest(
+            url,
+            "POST",
+            JSON.stringify({
               name: formData.inputs.name.value,
               email: formData.inputs.email.value,
               password: formData.inputs.password.value
-            })
-          });
-
-          const responseData = await response.json();
-
-          if (!response.ok) {
-            throw new Error(responseData.message);
-          }
+            }),
+            { "Content-Type": "application/json" }
+          );
 
           store.dispatch("login");
           router.push("/");
         } catch (error) {
-          isLoading.value = false;
-          errorMessage.value = error.message || "Something went wrong";
+          console.log(error.message);
         }
       }
-    };
-
-    const errorHandler = () => {
-      errorMessage.value = null;
     };
 
     const validatorEmail = () => VALIDATOR_EMAIL();
@@ -183,7 +162,7 @@ export default {
       switchModeHandler,
       authSubmitHandler,
       inputHandler,
-      errorHandler,
+      clearError,
       validatorEmail,
       validatorMinlegth,
       validatorRequired

@@ -6,7 +6,7 @@
       :id="user.id"
       :name="user.name"
       :image="user.image"
-      :placeCount="user.places"
+      :placeCount="user.places.length"
     ></user-item>
   </ul>
 </template>
