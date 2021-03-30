@@ -1,5 +1,14 @@
 <template>
+  <the-error-modal
+    v-if="errorMessage"
+    :errorMessage="errorMessage"
+    @click="clearError"
+  ></the-error-modal>
   <form class="place-form" @submit.prevent="placeSubmitHandler">
+    <the-loading-spinner
+      v-if="isLoading"
+      :asOverlay="true"
+    ></the-loading-spinner>
     <the-input
       id="title"
       element="input"
@@ -37,12 +46,19 @@ import {
   VALIDATOR_MINLENGTH
 } from "../../shared/utils/validator";
 
+import { useHttp } from "../../shared/hooks/http-hook";
 import { useForm } from "../../shared/hooks/form-hook";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 import "./PlaceForm.css";
 
 export default {
   setup() {
+    const store = useStore();
+    const router = useRouter();
+    const { isLoading, errorMessage, sendRequest, clearError } = useHttp();
+
     const [formState, inputHandler] = useForm(
       {
         title: {
@@ -64,16 +80,39 @@ export default {
     const validatorRequire = () => VALIDATOR_REQUIRE();
     const validatorMinLength = val => VALIDATOR_MINLENGTH(val);
 
-    const placeSubmitHandler = () => {
-      console.log(formState.inputs);
+    const placeSubmitHandler = async () => {
+      const url = "http://localhost:5500/api/places";
+
+      try {
+        await sendRequest(
+          url,
+          "POST",
+          JSON.stringify({
+            title: formState.inputs.title.value,
+            description: formState.inputs.description.value,
+            address: formState.inputs.address.value,
+            creator: store.getters.userId
+          }),
+          {
+            "Content-Type": "application/json"
+          }
+        );
+
+        router.push("/");
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     return {
+      isLoading,
+      errorMessage,
       validatorRequire,
       validatorMinLength,
       inputHandler,
       formState,
-      placeSubmitHandler
+      placeSubmitHandler,
+      clearError
     };
   }
 };

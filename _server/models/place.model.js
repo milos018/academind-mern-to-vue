@@ -1,31 +1,31 @@
-const { Schema, model, Types } = require('mongoose')
+const { Schema, model, Types } = require('mongoose');
 
 const placeSchema = new Schema({
-  title: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  image: {
-    type: String,
-    required: true
-  },
-  address: {
-    type: String,
-    required: true
-  },
-  location: {
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true },
-  },
-  creator: {
-    type: Types.ObjectId,
-    required: true,
-    ref: 'user'
-  }
-})
+	title: {
+		type: String,
+		required: true,
+	},
+	description: {
+		type: String,
+		required: true,
+	},
+	image: {
+		type: String,
+		// required: true,
+	},
+	address: {
+		type: String,
+		required: true,
+	},
+	location: {
+		// lat: { type: Number, required: true },
+		// lng: { type: Number, required: true },
+	},
+	creator: {
+		type: Types.ObjectId,
+		required: true,
+		ref: 'user',
+	},
+});
 
-module.exports = model('place', placeSchema)
+module.exports = model('place', placeSchema);

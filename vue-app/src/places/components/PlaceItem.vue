@@ -1,6 +1,6 @@
 <template>
   <the-modal
-    @onCancel="closeMapHandler"
+    @click="closeMapHandler"
     v-if="showMap"
     :show="showMap"
     contentClass="place-item__modal-content"
@@ -21,7 +21,7 @@
   <the-modal
     v-if="showConfirmModal"
     :show="showConfirmModal"
-    @onCancel="cancelDeleteHandler"
+    @click="cancelDeleteHandler"
     footerClass="place-item__modal-actions"
   >
     <template v-slot:header>
@@ -29,11 +29,11 @@
     </template>
     <p>Please click Confirm to Delete. This cannot be undone.</p>
     <template v-slot:footer>
-      <the-button inverse="inverse" @click="cancelDeleteHandler"
+      <the-button inverse="inverse" type="button" @click="cancelDeleteHandler"
         >Cancel</the-button
       >
       <the-button danger="danger" type="button" @click="confirmDeleteHandler"
-        >Delete</the-button
+        >Delete the Place</the-button
       >
     </template>
   </the-modal>
@@ -51,11 +51,13 @@
         <the-button inverse="inverse" @click="openMapHandler"
           >View on Map</the-button
         >
-        <the-button v-if="$store.getters.isLoggedIn" :to="'/places/' + id"
+        <the-button
+          v-if="$store.getters.userId === $props.creatorId"
+          :to="'/places/' + id"
           >Edit</the-button
         >
         <the-button
-          v-if="$store.getters.isLoggedIn"
+          v-if="$store.getters.userId === $props.creatorId"
           @click="showDeleteWarningHandler"
           danger="danger"
           >Delete</the-button
@@ -67,9 +69,11 @@
 
 <script>
 import { ref } from "vue";
+import { useHttp } from "../../shared/hooks/http-hook";
 import Map from "../../shared/components/UIElements/Map";
 export default {
   components: { Map },
+  inheritAttrs: false,
   props: {
     id: {
       type: String
@@ -93,9 +97,13 @@ export default {
       type: Object
     }
   },
-  setup() {
+  emits: ["deletePlace"],
+
+  setup(props, context) {
     const showMap = ref(false);
     const showConfirmModal = ref(false);
+
+    const { isLoading, errorMessage, sendRequest, clearMessage } = useHttp();
 
     const openMapHandler = () => {
       showMap.value = true;
@@ -112,12 +120,22 @@ export default {
       showConfirmModal.value = false;
     };
 
-    const confirmDeleteHandler = () => {
-      console.log("DELETE");
+    const confirmDeleteHandler = async () => {
       showConfirmModal.value = false;
+      const url = "http://localhost:5500/api/places/" + props.id;
+      try {
+        await sendRequest(url, "DELETE");
+        context.emit("deletePlace", props.id);
+      } catch (error) {
+        // }
+      }
     };
 
     return {
+      isLoading,
+      errorMessage,
+      sendRequest,
+      clearMessage,
       showMap,
       showConfirmModal,
       openMapHandler,

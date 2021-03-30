@@ -27,7 +27,10 @@ exports.signup = async (req, res, next) => {
 
 	let existingUser;
 	try {
-		existingUser = await UserModel.findOne({ email: email });
+		existingUser = await UserModel.findOne(
+			{ email: email },
+			'email name places',
+		);
 	} catch (error) {
 		return next(new HttpError('Could not process the request', 500));
 	}
@@ -48,7 +51,6 @@ exports.signup = async (req, res, next) => {
 		try {
 			await newUser.save();
 		} catch (error) {
-			console.log(error);
 			return next(new HttpError('Could not save user', 500));
 		}
 
@@ -61,11 +63,10 @@ exports.signup = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
 	const { email, password } = req.body;
-	console.log(req.body);
 
 	let foundUser;
 	try {
-		foundUser = await UserModel.findOne({ email });
+		foundUser = await UserModel.findOne({ email: email });
 	} catch (error) {
 		return next(new HttpError('Could not check user data', 500));
 	}

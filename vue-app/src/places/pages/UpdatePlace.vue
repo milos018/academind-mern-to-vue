@@ -1,10 +1,23 @@
 <template>
-  <div v-if="!foundPlace" class="center">
+  <div v-if="!isLoading && !loadedPlace" class="center">
     <the-card>
       <h2>Could not find place with this ID</h2>
     </the-card>
   </div>
-  <form v-else class="place-form" @submit.prevent="placeUpdateSubmitHandler">
+  <the-error-modal
+    v-if="errorMessage"
+    :errorMessage="errorMessage"
+    @click="clearError"
+  ></the-error-modal>
+  <div class="center">
+    <the-loading-spinner v-if="isLoading && !loadedPlace" :asOverlay="true">
+    </the-loading-spinner>
+  </div>
+  <form
+    v-if="!isLoading && loadedPlace"
+    class="place-form"
+    @submit.prevent="placeUpdateSubmitHandler"
+  >
     <the-input
       id="title"
       element="input"
@@ -33,56 +46,28 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_MINLENGTH
 } from "../../shared/utils/validator";
 
+import { useHttp } from "../../shared/hooks/http-hook";
 import { useForm } from "../../shared/hooks/form-hook";
 
 import "./PlaceForm.css";
 
-const DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire State Blgd",
-    description: "Great building in NY",
-    imageUrl:
-      "https://pbs.twimg.com/profile_images/1272532349151072262/kBEZiWIQ.jpg",
-    address: "20 W 34th St, New York, NY 10001, United States",
-    location: {
-      lat: 40.7484405,
-      lng: -73.9878584
-    },
-    creator: "u1"
-  },
-  {
-    id: "p2",
-    title: "Statue of liberty",
-    description:
-      "The Statue of Liberty is a colossal neoclassical sculpture on Liberty Island in New York Harbor within New York City, in the United States.",
-    imageUrl:
-      "https://www.history.com/.image/ar_4:3%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MTY1MTc1MTk3ODI0MDAxNjA5/topic-statue-of-liberty-gettyimages-960610006-promo.jpg",
-    address: "New York, NY 10004, United States",
-    location: {
-      lat: 40.6892534,
-      lng: -74.0466891
-    },
-    creator: "u2"
-  }
-];
-
 export default {
   setup() {
-    const isLoading = ref(true);
+    const loadedPlace = ref();
     const route = useRoute();
+    const router = useRouter();
+    const store = useStore();
 
-    const foundPlace = computed(() =>
-      DUMMY_PLACES.find(place => place.id === route.params.placeId)
-    );
+    const { isLoading, errorMessage, sendRequest, clearError } = useHttp();
 
     const [formState, inputHandler, setFormData] = useForm(
       {
@@ -98,37 +83,65 @@ export default {
       false
     );
 
-    if (foundPlace.value) {
-      setFormData(
-        {
-          title: {
-            value: foundPlace.value.title,
-            isValid: true
-          },
-          description: {
-            value: foundPlace.value.description,
-            isValid: true
-          }
-        },
-        true
-      );
-      isLoading.value = false;
-    }
+    const fetchPlaces = async () => {
+      const url = "http://localhost:5500/api/places/" + route.params.placeId;
 
-    const placeUpdateSubmitHandler = () => {
-      console.log(formState.inputs);
+      try {
+        const responseData = await sendRequest(url);
+        loadedPlace.value = responseData.place;
+        setFormData(
+          {
+            title: {
+              value: responseData.place.title,
+              isValid: true
+            },
+            description: {
+              value: responseData.place.description,
+              isValid: true
+            }
+          },
+          true
+        );
+      } catch (error) {
+        //
+      }
+    };
+    fetchPlaces();
+
+    const placeUpdateSubmitHandler = async () => {
+      const url = "http://localhost:5500/api/places/" + route.params.placeId;
+
+      try {
+        await sendRequest(
+          url,
+          "PATCH",
+          JSON.stringify({
+            title: formState.inputs.title.value,
+            description: formState.inputs.description.value
+          }),
+          {
+            "Content-Type": "application/json"
+          }
+        );
+        router.push("/" + store.getters.userId + "/places");
+      } catch (error) {
+        //
+      }
     };
 
     const validatorRequire = () => VALIDATOR_REQUIRE();
     const validatorMinLength = val => VALIDATOR_MINLENGTH(val);
 
     return {
-      foundPlace,
+      isLoading,
+      loadedPlace,
+      errorMessage,
       formState,
       validatorRequire,
       validatorMinLength,
       inputHandler,
-      placeUpdateSubmitHandler
+      placeUpdateSubmitHandler,
+      clearError
     };
   }
 };

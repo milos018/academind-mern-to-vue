@@ -4,7 +4,9 @@
       <router-link to="/">All Users</router-link>
     </li>
     <li v-if="$store.getters.isLoggedIn">
-      <router-link to="/u1/places">My Places</router-link>
+      <router-link :to="'/' + $store.getters.userId + '/places'"
+        >My Places</router-link
+      >
     </li>
     <li v-if="$store.getters.isLoggedIn">
       <router-link to="/places/new">Add Place</router-link>

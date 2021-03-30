@@ -65,7 +65,6 @@ import {
 export default {
   setup() {
     const isLoginMode = ref(true);
-
     const { isLoading, errorMessage, sendRequest, clearError } = useHttp();
 
     const [formData, inputHandler, setFormData] = useForm(
@@ -112,7 +111,7 @@ export default {
         try {
           const url = "http://localhost:5500/api/users/login";
 
-          await sendRequest(
+          const userData = await sendRequest(
             url,
             "POST",
             JSON.stringify({
@@ -122,7 +121,7 @@ export default {
             { "Content-Type": "application/json" }
           );
 
-          store.dispatch("login");
+          store.dispatch("login", userData.user._id);
           router.push("/");
         } catch (error) {
           console.log(error.message);
@@ -131,7 +130,7 @@ export default {
         try {
           const url = "http://localhost:5500/api/users/signup";
 
-          await sendRequest(
+          const userData = await sendRequest(
             url,
             "POST",
             JSON.stringify({
@@ -142,7 +141,7 @@ export default {
             { "Content-Type": "application/json" }
           );
 
-          store.dispatch("login");
+          store.dispatch("login", userData.user._id);
           router.push("/");
         } catch (error) {
           console.log(error.message);

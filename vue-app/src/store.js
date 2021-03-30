@@ -3,20 +3,23 @@ import { createStore } from "vuex";
 export default createStore({
   state() {
     return {
-      isLoggedIn: false
+      isLoggedIn: false,
+      userId: null
     };
   },
   mutations: {
-    login(state) {
+    login(state, userId) {
       state.isLoggedIn = true;
+      state.userId = userId;
     },
     logout(state) {
       state.isLoggedIn = false;
+      state.userId = null;
     }
   },
   actions: {
-    login({ commit }) {
-      commit("login");
+    login({ commit }, userId) {
+      commit("login", userId);
     },
     logout({ commit }) {
       commit("logout");
@@ -25,6 +28,9 @@ export default createStore({
   getters: {
     isLoggedIn(state) {
       return state.isLoggedIn;
+    },
+    userId(state) {
+      return state.userId;
     }
   }
 });

@@ -30,12 +30,7 @@ export default {
     "footer",
     "onSubmit"
   ],
-  emits: ["click", "onSubmit"],
-  methods: {
-    handleSubmit(e) {
-      e.preventDefault();
-    }
-  }
+  emits: ["click"]
 };
 </script>
 

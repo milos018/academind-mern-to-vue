@@ -1,41 +1,25 @@
 <template>
-  <place-list :userPlaces="userPlaces"></place-list>
+  <the-error-modal
+    v-if="!isLoading && errorMessage"
+    :errorMessage="errorMessage"
+    @click="clearError"
+  ></the-error-modal>
+  <div class="center">
+    <the-loading-spinner v-if="isLoading" :asOverlay="true">
+    </the-loading-spinner>
+  </div>
+  <place-list
+    :userPlaces="userPlaces"
+    @deletePlace="placeDeleteHandler"
+  ></place-list>
 </template>
 
 <script>
-import PlaceList from "../components/PlaceList";
-import { computed } from "vue";
+import { ref } from "vue";
 import { useRoute } from "vue-router";
+import { useHttp } from "../../shared/hooks/http-hook";
 
-const DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire State Blgd",
-    description: "Great building in NY",
-    imageUrl:
-      "https://pbs.twimg.com/profile_images/1272532349151072262/kBEZiWIQ.jpg",
-    address: "20 W 34th St, New York, NY 10001, United States",
-    location: {
-      lat: 40.7484405,
-      lng: -73.9878584
-    },
-    creator: "u1"
-  },
-  {
-    id: "p2",
-    title: "Statue of liberty",
-    description:
-      "The Statue of Liberty is a colossal neoclassical sculpture on Liberty Island in New York Harbor within New York City, in the United States.",
-    imageUrl:
-      "https://www.history.com/.image/ar_4:3%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MTY1MTc1MTk3ODI0MDAxNjA5/topic-statue-of-liberty-gettyimages-960610006-promo.jpg",
-    address: "New York, NY 10004, United States",
-    location: {
-      lat: 40.6892534,
-      lng: -74.0466891
-    },
-    creator: "u2"
-  }
-];
+import PlaceList from "../components/PlaceList";
 
 export default {
   components: {
@@ -43,14 +27,38 @@ export default {
   },
   setup() {
     const route = useRoute();
+    const userPlaces = ref();
+    const userId = route.params.userId;
 
-    const userPlaces = computed(() => {
-      return DUMMY_PLACES.filter(
-        place => place.creator === route.params.userId
-      );
-    });
+    const { isLoading, errorMessage, sendRequest, clearError } = useHttp();
 
-    return { userPlaces };
+    const getUserPlaces = async () => {
+      try {
+        const result = await sendRequest(
+          "http://localhost:5500/api/places/user/" + userId
+        );
+        userPlaces.value = result.userPlaces.places;
+      } catch (error) {
+        //
+      }
+    };
+
+    getUserPlaces();
+
+    const placeDeleteHandler = placeId => {
+      userPlaces.value = userPlaces.value.filter(place => {
+        return place._id !== placeId;
+      });
+    };
+
+    return {
+      userPlaces,
+      isLoading,
+      errorMessage,
+      sendRequest,
+      clearError,
+      placeDeleteHandler
+    };
   }
 };
 </script>

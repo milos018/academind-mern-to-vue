@@ -2,8 +2,8 @@
   <ul class="users-list">
     <user-item
       v-for="user in users"
-      :key="user.id"
-      :id="user.id"
+      :key="user._id"
+      :id="user._id"
       :name="user.name"
       :image="user.image"
       :placeCount="user.places.length"

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 
 import Input from '../../shared/components/FormElements/Input';
 import Card from '../../shared/components/UIElements/Card';
 import Button from '../../shared/components/FormElements/Button';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
 import './PlaceForm.css';
 
@@ -12,41 +14,16 @@ import {
 	VALIDATOR_MINLENGTH,
 } from '../../shared/utils/validator';
 
+import { useHttp } from '../../shared/hooks/http-hook';
 import { useForm } from '../../shared/hooks/form-hook';
-
-const DUMMY_PLACES = [
-	{
-		id: 'p1',
-		title: 'Empire State Blgd',
-		description: 'Great building in NY',
-		imageUrl:
-			'https://pbs.twimg.com/profile_images/1272532349151072262/kBEZiWIQ.jpg',
-		address: '20 W 34th St, New York, NY 10001, United States',
-		location: {
-			lat: 40.7484405,
-			lng: -73.9878584,
-		},
-		creator: 'u1',
-	},
-	{
-		id: 'p2',
-		title: 'Statue of liberty',
-		description:
-			'The Statue of Liberty is a colossal neoclassical sculpture on Liberty Island in New York Harbor within New York City, in the United States.',
-		imageUrl:
-			'https://www.history.com/.image/ar_4:3%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MTY1MTc1MTk3ODI0MDAxNjA5/topic-statue-of-liberty-gettyimages-960610006-promo.jpg',
-		address: 'New York, NY 10004, United States',
-		location: {
-			lat: 40.6892534,
-			lng: -74.0466891,
-		},
-		creator: 'u2',
-	},
-];
+import { AuthContext } from '../../shared/context/auth-context';
 
 const UpdatePlace = () => {
-	const [isLoading, setIsLoading] = useState(true);
+	const auth = useContext(AuthContext);
+	const [loadedPlace, setLoadedPlace] = useState();
 	const { placeId } = useParams();
+
+	const { isLoading, errorMessage, sendRequest, clearError } = useHttp();
 
 	const [formState, inputHandler, setFormData] = useForm(
 		{
@@ -62,32 +39,60 @@ const UpdatePlace = () => {
 		true,
 	);
 
-	const foundPlace = DUMMY_PLACES.find((place) => place.id === placeId);
 	useEffect(() => {
-		if (foundPlace) {
-			setFormData(
-				{
-					title: {
-						value: foundPlace.title,
-						isValid: true,
-					},
-					description: {
-						value: foundPlace.description,
-						isValid: true,
-					},
-				},
-				true,
-			);
-		}
-		setIsLoading(false);
-	}, [setFormData, foundPlace]);
+		const fetchPlace = async () => {
+			const url = 'http://localhost:5500/api/places/' + placeId;
 
-	const placeUpdateSubmitHandler = (event) => {
+			try {
+				const responseData = await sendRequest(url);
+				setLoadedPlace(responseData.place);
+				setFormData(
+					{
+						title: {
+							value: responseData.place.title,
+							isValid: true,
+						},
+						description: {
+							value: responseData.place.description,
+							isValid: true,
+						},
+					},
+					true,
+				);
+			} catch (error) {}
+		};
+		fetchPlace();
+	}, [sendRequest, placeId, setFormData]);
+
+	const history = useHistory();
+
+	const placeUpdateSubmitHandler = async (event) => {
 		event.preventDefault();
-		console.log(formState.inputs);
+		const url = 'http://localhost:5500/api/places/' + placeId;
+
+		try {
+			await sendRequest(
+				url,
+				'PATCH',
+				JSON.stringify({
+					title: formState.inputs.title.value,
+					description: formState.inputs.description.value,
+				}),
+				{ 'Content-Type': 'application/json' },
+			);
+			history.push('/' + auth.userId + '/places');
+		} catch (error) {}
 	};
 
-	if (!foundPlace)
+	if (isLoading) {
+		return (
+			<div className='center'>
+				<LoadingSpinner />
+			</div>
+		);
+	}
+
+	if (!loadedPlace && !errorMessage)
 		return (
 			<div className='center'>
 				<Card>
@@ -96,41 +101,38 @@ const UpdatePlace = () => {
 			</div>
 		);
 
-	if (isLoading) {
-		return (
-			<div className='center'>
-				<h2>Loading</h2>
-			</div>
-		);
-	}
-
 	return (
-		<form onSubmit={placeUpdateSubmitHandler} className='place-form'>
-			<Input
-				id='title'
-				element='input'
-				type='text'
-				label='Title'
-				validators={[VALIDATOR_REQUIRE()]}
-				errorText='Please enter a valid title.'
-				onInput={inputHandler}
-				initialValue={formState.inputs.title.value}
-				initialValid={formState.inputs.title.isValid}
-			/>
-			<Input
-				id='description'
-				element='textarea'
-				label='Description'
-				validators={[VALIDATOR_MINLENGTH(5)]}
-				errorText='Please enter a valid description (min 5 characters).'
-				onInput={inputHandler}
-				initialValue={formState.inputs.description.value}
-				initialValid={formState.inputs.description.isValid}
-			/>
-			<Button type='submit' disabled={!formState.isValid}>
-				Update Place
-			</Button>
-		</form>
+		<React.Fragment>
+			<ErrorModal error={errorMessage} onClear={clearError} />
+			{!isLoading && loadedPlace && (
+				<form onSubmit={placeUpdateSubmitHandler} className='place-form'>
+					<Input
+						id='title'
+						element='input'
+						type='text'
+						label='Title'
+						validators={[VALIDATOR_REQUIRE()]}
+						errorText='Please enter a valid title.'
+						onInput={inputHandler}
+						initialValue={loadedPlace.title}
+						initialValid={true}
+					/>
+					<Input
+						id='description'
+						element='textarea'
+						label='Description'
+						validators={[VALIDATOR_MINLENGTH(5)]}
+						errorText='Please enter a valid description (min 5 characters).'
+						onInput={inputHandler}
+						initialValue={loadedPlace.description}
+						initialValid={true}
+					/>
+					<Button type='submit' disabled={!formState.isValid}>
+						Update Place
+					</Button>
+				</form>
+			)}
+		</React.Fragment>
 	);
 };
 
