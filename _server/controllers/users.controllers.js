@@ -7,7 +7,7 @@ const UserModel = require('../models/user.model');
 exports.getUsers = async (req, res, next) => {
 	let users;
 	try {
-		users = await UserModel.find({}, 'email name places');
+		users = await UserModel.find({}, 'email name places image');
 	} catch (error) {
 		return next(new HttpError('Problem fetching users', 500));
 	}
@@ -27,10 +27,7 @@ exports.signup = async (req, res, next) => {
 
 	let existingUser;
 	try {
-		existingUser = await UserModel.findOne(
-			{ email: email },
-			'email name places',
-		);
+		existingUser = await UserModel.findOne({ email: email });
 	} catch (error) {
 		return next(new HttpError('Could not process the request', 500));
 	}
@@ -44,6 +41,7 @@ exports.signup = async (req, res, next) => {
 		newUser = new UserModel({
 			name: name,
 			email: email,
+			image: req.file.path,
 			password: hashed,
 			places: [],
 		});

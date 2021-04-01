@@ -20,6 +20,12 @@
         errorText="Please enter name."
         @onInput="inputHandler"
       ></the-input>
+      <image-upload
+        v-if="!isLoginMode"
+        center="center"
+        id="image"
+        @onInput="inputHandler"
+      ></image-upload>
       <the-input
         id="email"
         element="input"
@@ -30,7 +36,6 @@
         @onInput="inputHandler"
       ></the-input>
       <the-input
-        hello="something"
         id="password"
         element="input"
         type="password"
@@ -56,6 +61,8 @@ import { useStore } from "vuex";
 import { useForm } from "../../shared/hooks/form-hook";
 import { useHttp } from "../../shared/hooks/http-hook";
 
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
+
 import {
   VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
@@ -63,6 +70,7 @@ import {
 } from "../../shared/utils/validator";
 
 export default {
+  components: { ImageUpload },
   setup() {
     const isLoginMode = ref(true);
     const { isLoading, errorMessage, sendRequest, clearError } = useHttp();
@@ -86,7 +94,8 @@ export default {
         setFormData(
           {
             ...formData.inputs,
-            name: undefined
+            name: undefined,
+            image: undefined
           },
           formData.inputs.email.isValid && formData.inputs.password.isValid
         );
@@ -94,7 +103,14 @@ export default {
         setFormData(
           {
             ...formData.inputs,
-            name: "",
+            name: {
+              value: "",
+              isValid: false
+            },
+            image: {
+              value: null,
+              isValid: false
+            },
             isValid: false
           },
           false
@@ -130,16 +146,13 @@ export default {
         try {
           const url = "http://localhost:5500/api/users/signup";
 
-          const userData = await sendRequest(
-            url,
-            "POST",
-            JSON.stringify({
-              name: formData.inputs.name.value,
-              email: formData.inputs.email.value,
-              password: formData.inputs.password.value
-            }),
-            { "Content-Type": "application/json" }
-          );
+          const data = new FormData();
+          data.append("email", formData.inputs.email.value);
+          data.append("name", formData.inputs.name.value);
+          data.append("password", formData.inputs.password.value);
+          data.append("image", formData.inputs.image.value);
+
+          const userData = await sendRequest(url, "POST", data);
 
           store.dispatch("login", userData.user._id);
           router.push("/");

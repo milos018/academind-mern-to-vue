@@ -3,7 +3,10 @@
     <the-card>
       <router-link :to="'/' + id + '/places'">
         <div class="user-item__image">
-          <the-avatar :image="image" :alt="name"></the-avatar>
+          <the-avatar
+            :image="'http://localhost:5500/' + $props.image"
+            :alt="name"
+          ></the-avatar>
         </div>
         <div class="user-item__info">
           <h2>{{ name }}</h2>

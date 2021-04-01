@@ -11,15 +11,15 @@ const placeSchema = new Schema({
 	},
 	image: {
 		type: String,
-		// required: true,
+		required: true,
 	},
 	address: {
 		type: String,
 		required: true,
 	},
 	location: {
-		// lat: { type: Number, required: true },
-		// lng: { type: Number, required: true },
+		lat: { type: Number, required: true },
+		lng: { type: Number, required: true },
 	},
 	creator: {
 		type: Types.ObjectId,

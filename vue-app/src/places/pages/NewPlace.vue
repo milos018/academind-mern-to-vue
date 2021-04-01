@@ -34,6 +34,7 @@
       errorText="Please enter a valid address."
       @onInput="inputHandler"
     ></the-input>
+    <image-upload id="image" @onInput="inputHandler"></image-upload>
     <the-button type="submit" :disabled="!formState.isValid"
       >Add Place</the-button
     >
@@ -51,9 +52,12 @@ import { useForm } from "../../shared/hooks/form-hook";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
+
 import "./PlaceForm.css";
 
 export default {
+  components: { ImageUpload },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -72,6 +76,10 @@ export default {
         address: {
           value: "",
           isValid: false
+        },
+        image: {
+          value: null,
+          isValid: false
         }
       },
       false
@@ -84,19 +92,14 @@ export default {
       const url = "http://localhost:5500/api/places";
 
       try {
-        await sendRequest(
-          url,
-          "POST",
-          JSON.stringify({
-            title: formState.inputs.title.value,
-            description: formState.inputs.description.value,
-            address: formState.inputs.address.value,
-            creator: store.getters.userId
-          }),
-          {
-            "Content-Type": "application/json"
-          }
-        );
+        const formData = new FormData();
+        formData.append("title", formState.inputs.title.value);
+        formData.append("description", formState.inputs.description.value);
+        formData.append("address", formState.inputs.address.value);
+        formData.append("creator", store.getters.userId);
+        formData.append("image", formState.inputs.image.value);
+
+        await sendRequest(url, "POST", formData);
 
         router.push("/");
       } catch (error) {

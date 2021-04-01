@@ -5,6 +5,7 @@ import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import ImageUpload from '../../shared/components/FormElements/ImageUpload';
 
 import {
 	VALIDATOR_EMAIL,
@@ -43,6 +44,7 @@ const Auth = () => {
 				{
 					...formState.inputs,
 					name: undefined,
+					image: undefined,
 				},
 				formState.inputs.email.isValid && formState.inputs.password.isValid,
 			);
@@ -50,7 +52,14 @@ const Auth = () => {
 			setFormData(
 				{
 					...formState.inputs,
-					name: '',
+					name: {
+						value: '',
+						isValid: false,
+					},
+					image: {
+						value: null,
+						isValid: false,
+					},
 					isValid: false,
 				},
 				false,
@@ -83,19 +92,15 @@ const Auth = () => {
 		} else {
 			try {
 				const url = 'http://localhost:5500/api/users/signup';
-				const resData = await sendRequest(
-					url,
-					'POST',
-					JSON.stringify({
-						name: formState.inputs.name.value,
-						email: formState.inputs.email.value,
-						password: formState.inputs.password.value,
-					}),
-					{
-						'Content-Type': 'application/json',
-					},
-				);
-				auth.login(resData.user.id);
+
+				const formData = new FormData();
+				formData.append('email', formState.inputs.email.value);
+				formData.append('name', formState.inputs.name.value);
+				formData.append('password', formState.inputs.password.value);
+				formData.append('image', formState.inputs.image.value);
+
+				const resData = await sendRequest(url, 'POST', formData);
+				auth.login(resData.user._id);
 			} catch (error) {
 				console.log(error.message);
 			}
@@ -119,6 +124,14 @@ const Auth = () => {
 							validators={[VALIDATOR_REQUIRE()]}
 							errorText='Pleae enter a name.'
 							onInput={inputHandler}
+						/>
+					)}
+					{!isLoginMode && (
+						<ImageUpload
+							center
+							id='image'
+							onInput={inputHandler}
+							errorText='Please provide an image.'
 						/>
 					)}
 					<Input

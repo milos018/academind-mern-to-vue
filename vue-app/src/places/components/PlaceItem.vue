@@ -15,7 +15,7 @@
       </div>
     </template>
     <template v-slot:footer>
-      <the-button @click="closeMapHandler">CLOSE</the-button>
+      <the-button type="button" @click="closeMapHandler">CLOSE</the-button>
     </template>
   </the-modal>
   <the-modal
@@ -40,7 +40,7 @@
   <li class="place-item">
     <the-card class="place-item__content">
       <div class="place-item__image">
-        <img :src="image" :alt="title" />
+        <img :src="'http://localhost:5500/' + $props.image" :alt="title" />
       </div>
       <div class="place-item__info">
         <h2>{{ title }}</h2>

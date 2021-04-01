@@ -72,7 +72,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .form-control {
   margin: 1rem 0;
 }
