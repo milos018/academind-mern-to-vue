@@ -89,17 +89,18 @@ export default {
     const validatorMinLength = val => VALIDATOR_MINLENGTH(val);
 
     const placeSubmitHandler = async () => {
-      const url = "http://localhost:5500/api/places";
+      const url = process.env.VUE_APP_API_URL + "/places";
 
       try {
         const formData = new FormData();
         formData.append("title", formState.inputs.title.value);
         formData.append("description", formState.inputs.description.value);
         formData.append("address", formState.inputs.address.value);
-        formData.append("creator", store.getters.userId);
         formData.append("image", formState.inputs.image.value);
 
-        await sendRequest(url, "POST", formData);
+        await sendRequest(url, "POST", formData, {
+          Authorization: "Bearer " + store.getters.token
+        });
 
         router.push("/");
       } catch (error) {

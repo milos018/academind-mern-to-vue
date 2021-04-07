@@ -48,17 +48,18 @@ const NewPlace = () => {
 
 	const placeSubmitHandler = async (event) => {
 		event.preventDefault();
-		const url = 'http://localhost:5500/api/places';
+		const url = process.env.REACT_APP_BACKEND_URL + '/places';
 
 		try {
 			const formData = new FormData();
 			formData.append('title', formState.inputs.title.value);
 			formData.append('description', formState.inputs.description.value);
 			formData.append('address', formState.inputs.address.value);
-			formData.append('creator', auth.userId);
 			formData.append('image', formState.inputs.image.value);
 
-			await sendRequest(url, 'POST', formData);
+			await sendRequest(url, 'POST', formData, {
+				Authorization: `Bearer ${auth.token}`,
+			});
 			history.push('/');
 		} catch (error) {
 			console.log(error);

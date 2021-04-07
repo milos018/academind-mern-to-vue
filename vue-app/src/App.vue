@@ -6,10 +6,29 @@
 </template>
 
 <script>
+import { useStore } from "vuex";
 import MainNavigation from "./shared/components/Navigation/MainNavigation.vue";
 
 export default {
-  components: { MainNavigation }
+  components: { MainNavigation },
+  setup() {
+    const store = useStore();
+
+    if (localStorage.getItem("userData")) {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+
+      if (
+        new Date(userData.tokenExpiration).toUTCString() >
+        new Date().toUTCString()
+      ) {
+        store.dispatch("login", userData);
+      } else {
+        store.dispatch("logout");
+      }
+    }
+
+    return {};
+  }
 };
 </script>
 

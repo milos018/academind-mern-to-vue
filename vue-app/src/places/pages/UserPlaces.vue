@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useHttp } from "../../shared/hooks/http-hook";
 
@@ -28,14 +28,14 @@ export default {
   setup() {
     const route = useRoute();
     const userPlaces = ref();
-    const userId = route.params.userId;
+    const userId = computed(() => route.params.userId);
 
     const { isLoading, errorMessage, sendRequest, clearError } = useHttp();
 
     const getUserPlaces = async () => {
       try {
         const result = await sendRequest(
-          "http://localhost:5500/api/places/user/" + userId
+          process.env.VUE_APP_API_URL + "/places/user/" + userId.value
         );
         userPlaces.value = result.userPlaces.places;
       } catch (error) {
@@ -44,6 +44,14 @@ export default {
     };
 
     getUserPlaces();
+
+    watch(userId, (newVal, oldVal) => {
+      if (userId.value && newVal !== oldVal) {
+        getUserPlaces();
+      } else {
+        return;
+      }
+    });
 
     const placeDeleteHandler = placeId => {
       userPlaces.value = userPlaces.value.filter(place => {

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const morgan = require('morgan');
-require('dotenv').config();
+// require('dotenv').config(); // using nodemon .env config
 
 const placesRoutes = require('./router/places.routes');
 const usersRoutes = require('./router/users.routes');
@@ -41,5 +41,5 @@ app.use((error, req, res, next) => {
 
 require('./data/db')();
 
-const PORT = 5500;
+const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => console.log(PORT));

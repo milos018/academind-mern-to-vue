@@ -13,18 +13,17 @@ exports.getAllPlaces = async (req, res, next) => {
 		// find all places in DB and show all fields except "__v"
 		allPlaces = await PlaceModel.find({}, '-__v');
 	} catch (error) {
-		return next(new HttpError('No places cound be found', 404));
+		return next(new HttpError('No places found. Code 1', 404));
 	}
 
 	if (!allPlaces || allPlaces.length === 0)
-		return next(new HttpError('No places cound be found', 404));
+		return next(new HttpError('No places found. Code 2', 404));
 
 	res.status(200).json({ places: allPlaces });
 };
 
 exports.getPlaceByPlaceId = async (req, res, next) => {
 	const { placeId } = req.params;
-	// const foundPlace = DUMMY_PLACES.find(place => place.id === placeId)
 
 	let foundPlace;
 	try {
@@ -65,7 +64,7 @@ exports.createPlace = async (req, res, next) => {
 	if (!errors.isEmpty())
 		return next(new HttpError('invalid input fields', 422));
 
-	const { title, description, address, creator } = req.body;
+	const { title, description, address } = req.body;
 
 	let coordinates;
 	try {
@@ -76,7 +75,7 @@ exports.createPlace = async (req, res, next) => {
 
 	let foundUser;
 	try {
-		foundUser = await UserModel.findById(creator);
+		foundUser = await UserModel.findById(req.userId);
 	} catch (error) {
 		return next(new HttpError('Could not get User', 500));
 	}
@@ -89,7 +88,7 @@ exports.createPlace = async (req, res, next) => {
 		image: req.file.path,
 		location: coordinates,
 		address,
-		creator,
+		creator: req.userId,
 	});
 
 	try {
@@ -135,6 +134,11 @@ exports.updatePlace = async (req, res, next) => {
 		);
 	}
 
+	// check if place belongs to logged in user
+	if (foundPlace.creator.toString() !== req.userId) {
+		return next(new HttpError('Not authorized to edit place', 401));
+	}
+
 	// check if body has fields, otherwise leave as is
 	if (title) foundPlace.title = title;
 	if (description) foundPlace.description = description;
@@ -170,6 +174,11 @@ exports.deletePlace = async (req, res, next) => {
 	if (!foundPlace)
 		return next(new HttpError('Could not find place with this ID', 404));
 
+	// check if place belongs to loggen in user
+	if (foundPlace.creator._id.toString() !== req.userId) {
+		return next(new HttpError('Not authorized to delete place', 401));
+	}
+
 	const imagePath = foundPlace.image;
 
 	try {
@@ -191,7 +200,7 @@ exports.deletePlace = async (req, res, next) => {
 	}
 
 	fs.unlink(imagePath, (err) => {
-		console.log(err);
+		if (err) console.log('err', err);
 	});
 
 	res.status(200).json({ message: 'Place deleted' });

@@ -84,7 +84,8 @@ export default {
     );
 
     const fetchPlaces = async () => {
-      const url = "http://localhost:5500/api/places/" + route.params.placeId;
+      const url =
+        process.env.VUE_APP_API_URL + "/places/" + route.params.placeId;
 
       try {
         const responseData = await sendRequest(url);
@@ -109,7 +110,8 @@ export default {
     fetchPlaces();
 
     const placeUpdateSubmitHandler = async () => {
-      const url = "http://localhost:5500/api/places/" + route.params.placeId;
+      const url =
+        process.env.VUE_APP_API_URL + "/places/" + route.params.placeId;
 
       try {
         await sendRequest(
@@ -120,7 +122,8 @@ export default {
             description: formState.inputs.description.value
           }),
           {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + store.getters.token
           }
         );
         router.push("/" + store.getters.userId + "/places");

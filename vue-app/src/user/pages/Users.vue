@@ -23,7 +23,7 @@ export default {
     const { isLoading, errorMessage, sendRequest, clearError } = useHttp();
 
     const getUsers = async () => {
-      const url = "http://localhost:5500/api/users";
+      const url = process.env.VUE_APP_API_URL + "/users";
       try {
         const userData = await sendRequest(url);
         users.value = userData.users;

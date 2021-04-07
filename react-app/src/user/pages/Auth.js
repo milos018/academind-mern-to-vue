@@ -73,7 +73,7 @@ const Auth = () => {
 
 		if (isLoginMode) {
 			try {
-				const url = 'http://localhost:5500/api/users/login';
+				const url = process.env.REACT_APP_BACKEND_URL + '/users/login';
 				const resData = await sendRequest(
 					url,
 					'POST',
@@ -85,13 +85,13 @@ const Auth = () => {
 						'Content-Type': 'application/json',
 					},
 				);
-				auth.login(resData.user._id);
+				auth.login(resData.userId, resData.token);
 			} catch (error) {
 				console.log(error.message);
 			}
 		} else {
 			try {
-				const url = 'http://localhost:5500/api/users/signup';
+				const url = process.env.REACT_APP_BACKEND_URL + '/users/signup';
 
 				const formData = new FormData();
 				formData.append('email', formState.inputs.email.value);
@@ -100,7 +100,7 @@ const Auth = () => {
 				formData.append('image', formState.inputs.image.value);
 
 				const resData = await sendRequest(url, 'POST', formData);
-				auth.login(resData.user._id);
+				auth.login(resData.userId, resData.token);
 			} catch (error) {
 				console.log(error.message);
 			}

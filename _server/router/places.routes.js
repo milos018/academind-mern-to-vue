@@ -5,10 +5,15 @@ const router = express.Router();
 
 const placesController = require('../controllers/places.controllers');
 const fileUpload = require('../middleware/file-upload');
+const checkAuth = require('../middleware/check-auth');
 
 router.get('/', placesController.getAllPlaces);
 router.get('/:placeId', placesController.getPlaceByPlaceId);
 router.get('/user/:userId', placesController.getPlacesByUserId);
+
+// checkAuth for all routes below
+
+router.use(checkAuth);
 
 router.post(
 	'/',

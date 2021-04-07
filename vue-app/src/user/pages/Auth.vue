@@ -125,7 +125,7 @@ export default {
     const authSubmitHandler = async () => {
       if (isLoginMode.value) {
         try {
-          const url = "http://localhost:5500/api/users/login";
+          const url = process.env.VUE_APP_API_URL + "/users/login";
 
           const userData = await sendRequest(
             url,
@@ -137,14 +137,14 @@ export default {
             { "Content-Type": "application/json" }
           );
 
-          store.dispatch("login", userData.user._id);
+          store.dispatch("login", userData);
           router.push("/");
         } catch (error) {
           console.log(error.message);
         }
       } else {
         try {
-          const url = "http://localhost:5500/api/users/signup";
+          const url = process.env.VUE_APP_API_URL + "/users/signup";
 
           const data = new FormData();
           data.append("email", formData.inputs.email.value);
@@ -153,8 +153,7 @@ export default {
           data.append("image", formData.inputs.image.value);
 
           const userData = await sendRequest(url, "POST", data);
-
-          store.dispatch("login", userData.user._id);
+          store.dispatch("login", userData);
           router.push("/");
         } catch (error) {
           console.log(error.message);

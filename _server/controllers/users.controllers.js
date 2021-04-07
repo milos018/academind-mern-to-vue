@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
-
+const jwt = require('jsonwebtoken');
 const HttpError = require('../models/http.Error.js');
 const UserModel = require('../models/user.model');
 
@@ -35,31 +35,55 @@ exports.signup = async (req, res, next) => {
 	if (existingUser)
 		return next(new HttpError('Could not create User with this email', 401));
 
-	bcrypt.hash(password, 10, async (err, hashed) => {
-		if (err) return next(new HttpError('Could not process, Code Hash', 500));
+	let hashed;
+	try {
+		hashed = await bcrypt.hash(password, 10);
+	} catch (error) {
+		return next(new HttpError('Could not process the request. Hash', 500));
+	}
 
-		newUser = new UserModel({
-			name: name,
-			email: email,
-			image: req.file.path,
-			password: hashed,
-			places: [],
-		});
+	if (!hashed) return next(new HttpError('Could not process the reuqest', 401));
 
-		try {
-			await newUser.save();
-		} catch (error) {
-			return next(new HttpError('Could not save user', 500));
-		}
+	const newUser = new UserModel({
+		name: name,
+		email: email,
+		image: req.file ? req.file.path : null,
+		password: hashed,
+		places: [],
+	});
 
-		res.status(201).json({
-			message: 'User Created',
-			user: newUser,
-		});
+	try {
+		await newUser.save();
+	} catch (error) {
+		return next(new HttpError('Could not save user', 500));
+	}
+
+	let token;
+	try {
+		token = jwt.sign(
+			{ userId: newUser.id, email: newUser.email },
+			process.env.JWT_SECRET,
+			{
+				expiresIn: '1h',
+			},
+		);
+	} catch (error) {
+		return next(new HttpError('Could not create token', 500));
+	}
+
+	res.status(201).json({
+		userId: newUser.id,
+		email: newUser.email,
+		token,
 	});
 };
 
 exports.login = async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return next(new HttpError('invalid input fields', 422));
+	}
+
 	const { email, password } = req.body;
 
 	let foundUser;
@@ -81,5 +105,22 @@ exports.login = async (req, res, next) => {
 	if (!passwordChecked)
 		return next(new HttpError('Could not authorize user. Code 2', 422));
 
-	res.json({ message: 'Logged In', user: foundUser });
+	let token;
+	try {
+		token = jwt.sign(
+			{ userId: foundUser.id, email: foundUser.email },
+			process.env.JWT_SECRET,
+			{
+				expiresIn: '1h',
+			},
+		);
+	} catch (error) {
+		return next(new HttpError('Could not create token', 500));
+	}
+
+	res.status(201).json({
+		userId: foundUser.id,
+		email: foundUser.email,
+		token,
+	});
 };

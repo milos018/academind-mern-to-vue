@@ -8,18 +8,18 @@ const routes = [
     component: Users
   },
   {
+    path: "/places/new",
+    name: "NewPlace",
+    component: () =>
+      import(/* webpackChunkName: "new-place" */ "./places/pages/NewPlace.vue")
+  },
+  {
     path: "/:userId/places",
     name: "UserPlaces",
     component: () =>
       import(
         /* webpackChunkName: "user-places" */ "./places/pages/UserPlaces.vue"
       )
-  },
-  {
-    path: "/places/new",
-    name: "NewPlace",
-    component: () =>
-      import(/* webpackChunkName: "new-place" */ "./places/pages/NewPlace.vue")
   },
   {
     path: "/places/:placeId",

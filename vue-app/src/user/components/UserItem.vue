@@ -3,10 +3,7 @@
     <the-card>
       <router-link :to="'/' + id + '/places'">
         <div class="user-item__image">
-          <the-avatar
-            :image="'http://localhost:5500/' + $props.image"
-            :alt="name"
-          ></the-avatar>
+          <the-avatar :image="userAvatarImage" :alt="name"></the-avatar>
         </div>
         <div class="user-item__info">
           <h2>{{ name }}</h2>
@@ -31,6 +28,11 @@ export default {
     },
     placeCount: {
       type: Number
+    }
+  },
+  computed: {
+    userAvatarImage() {
+      return process.env.VUE_APP_API_STATIC + this.$props.image;
     }
   }
 };

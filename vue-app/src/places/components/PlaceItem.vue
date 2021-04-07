@@ -40,7 +40,7 @@
   <li class="place-item">
     <the-card class="place-item__content">
       <div class="place-item__image">
-        <img :src="'http://localhost:5500/' + $props.image" :alt="title" />
+        <img :src="placeItemImage" :alt="title" />
       </div>
       <div class="place-item__info">
         <h2>{{ title }}</h2>
@@ -68,7 +68,8 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
 import { useHttp } from "../../shared/hooks/http-hook";
 import Map from "../../shared/components/UIElements/Map";
 export default {
@@ -103,6 +104,11 @@ export default {
     const showMap = ref(false);
     const showConfirmModal = ref(false);
 
+    const store = useStore();
+    const placeItemImage = computed(
+      () => process.env.VUE_APP_API_STATIC + props.image
+    );
+
     const { isLoading, errorMessage, sendRequest, clearMessage } = useHttp();
 
     const openMapHandler = () => {
@@ -122,9 +128,11 @@ export default {
 
     const confirmDeleteHandler = async () => {
       showConfirmModal.value = false;
-      const url = "http://localhost:5500/api/places/" + props.id;
+      const url = process.env.VUE_APP_API_URL + "/places/" + props.id;
       try {
-        await sendRequest(url, "DELETE");
+        await sendRequest(url, "DELETE", null, {
+          Authorization: "Bearer " + store.getters.token
+        });
         context.emit("deletePlace", props.id);
       } catch (error) {
         // }
@@ -135,6 +143,7 @@ export default {
       isLoading,
       errorMessage,
       sendRequest,
+      placeItemImage,
       clearMessage,
       showMap,
       showConfirmModal,
