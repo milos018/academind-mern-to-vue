@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const morgan = require('morgan');
-// require('dotenv').config(); // using nodemon .env config
+require('dotenv').config();
 
 const placesRoutes = require('./router/places.routes');
 const usersRoutes = require('./router/users.routes');
